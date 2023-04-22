@@ -1,0 +1,116 @@
+// Red docker
+docker network create --driver bridge --subnet 10.0.0.0/24 TestNetwork
+
+// Servidores de configuracion
+docker run -d --net TestNetwork --ip 10.11.11.13 -p 27018:27017 --name Test_dispconf1 mongo mongod --port 27017 --configsvr --bind_ip_all --replSet "Test_repconfdisp" --dbpath /data/configdb
+docker run -d --net TestNetwork --ip 10.11.11.14 -p 27020:27017 --name Test_dispconf2 mongo mongod --port 27017 --configsvr --bind_ip_all --replSet "Test_repconfdisp" --dbpath /data/configdb
+
+------------------------------------------------------------------------------------------------------------------------
+
+// Red docker
+docker network create --driver bridge --subnet 10.0.0.0/24 Network_Caso4
+
+------------------------------------------------------------------------------------------------------------------------
+
+// Servidores de configuracion
+docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> -p <PUERTO_DIAGRAMA>:27017 --name <NOMBRE_DIAGRAMA> mongo mongod --port 27017 --configsvr --bind_ip_all --replSet "<NOMBRE_REPLICA_DIAGRAMA>" --dbpath /data/configdb
+
+// Initiate de los serv. configuracion
+rs.initiate(
+  {
+    _id: "<NOMBRE_REPLICA>",
+    configsvr: true,
+    members: [
+      { _id : 0, host : "<IP_VPN>:<PUERTO_DIAGRAMA>" },
+      { _id : 1, host : "<IP_VPN>:<PUERTO_DIAGRAMA>" }
+    ]
+  }
+);
+
+------------------------------------------------------------------------------------------------------------------------
+
+// Servidores Shards
+docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> -p <PUERTO_DIAGRAMA>:27017 --name <NOMBRE_DIAGRAMA> mongo mongod --port 27017 --bind_ip_all --replSet "<NOMBRE_REPLICA_DIAGRAMA>"
+
+// Initiate de los serv. Shards
+rs.initiate(
+  {
+    _id: "<NOMBRE_REPLICA>",
+    configsvr: true,
+    members: [
+      { _id : 0, host : "<IP_VPN>:<PUERTO_DIAGRAMA>" },
+      { _id : 1, host : "<IP_VPN>:<PUERTO_DIAGRAMA>" }
+    ]
+  }
+);
+
+------------------------------------------------------------------------------------------------------------------------
+
+// Servidores Router (Hacer el 'addShard(...)' por cada replicaSet que exista)
+docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> -p <PUERTO_DIAGRAMA>:27017 --name <NOMBRE_DIAGRAMA> mongo mongos --port 27017 --bind_ip_all --configdb repconfdisp/<IP_VPN_CONF_1>:<PUERTO_CONF_1>,<IP_VPN_CONF_2>:<PUERTO_CONF_2>
+
+// Agregamos los shard al router
+sh.addShard("<NOMBRE_REPLICA>/<IP_VPN_SHARD_1>:<PUERTO_SHARD_1>");
+
+------------------------------------------------------------------------------------------------------------------------
+
+>  *************************  <
+>  ** NO SE QUE HACE ESTO **  <
+>  *************************  <
+
+// hagan esta parte de distribuir por configuracion los cursos que son de una sede u otra
+// para hacer distribucion manual de datos se puede hacer por shardkeys de rangos o con shard tags
+// desde el router
+sh.addShardTag("repNicaragua", "Nicaragua")
+sh.addShardTag("repPanama", "Panama")
+sh.addShardTag("repCostaRica", "Costa Rica")
+
+// Asigna un rango en el sharded cluster
+sh.addTagRange( "disponibles.servicios",
+                { pais: "Nicaragua" },
+                { pais: "Nicaragua1" },
+                "Nicaragua"
+              )
+
+sh.addTagRange( "disponibles.servicios",
+                { pais: "Panama" },
+                { pais: "Panama1" },
+                "Panama"
+              )
+
+sh.addTagRange( "disponibles.servicios",
+                { pais: "Costa Rica" },
+                { pais: "Costa Rica1" },
+                "Costa Rica"
+              )
+
+// Indico cual va a ser la base de datos que va a soportar sharding
+sh.enableSharding("disponibles");
+
+// luego el collection y el campo del collection que va servir como shardkey
+sh.shardCollection("disponibles.servicios", { pais : 1 } );
+
+------------------------------------------------------------------------------------------------------------------------
+
+// Creamos los arbitros(Puede ser que el arbitro no ocupe el '--bind_ip_all')
+docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> --name Poveda mongo mongod --port 27017 --replSet <NOMBRE_REPLICA>
+
+// >>> Para agregar los arbitros
+// voy al router, accedo a la base de datos que está en sharding y elevo el writeconcern
+db.adminCommand({
+  "setDefaultRWConcern" : 1,
+  "defaultWriteConcern" : {
+    "w" : 2
+  },
+  "defaultReadConcern" : { "level" : "available" }
+});
+
+// Me conecto a cada servidor de replica y le agrego su arbitro
+// Arbitro Nicaragua
+rs.addArb("10.0.0.12:27017")
+
+// Arbitro Panama
+rs.addArb("10.0.0.13:27017")
+
+// Arbitro Costa Rica
+rs.addArb("10.0.0.14:27017")
