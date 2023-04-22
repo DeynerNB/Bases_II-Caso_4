@@ -92,7 +92,7 @@ sh.shardCollection("disponibles.servicios", { pais : 1 } );
 ------------------------------------------------------------------------------------------------------------------------
 
 // Creamos los arbitros(Puede ser que el arbitro no ocupe el '--bind_ip_all')
-docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> --name Poveda mongo mongod --port 27017 --replSet <NOMBRE_REPLICA>
+docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> --name <NOMBRE_DIAGRAMA> mongo mongod --port 27017 --replSet <NOMBRE_REPLICA>
 
 // >>> Para agregar los arbitros
 // voy al router, accedo a la base de datos que está en sharding y elevo el writeconcern
