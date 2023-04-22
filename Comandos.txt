@@ -23,7 +23,7 @@ rs.initiate(
 ------------------------------------------------------------------------------------------------------------------------
 
 // Servidores Shards
-docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> -p <PUERTO_DIAGRAMA>:27017 --name <NOMBRE_DIAGRAMA> mongo mongod --port 27017 --bind_ip_all --replSet "<NOMBRE_REPLICA_DIAGRAMA>"
+docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> -p <PUERTO_DIAGRAMA>:27017 --name <NOMBRE_DIAGRAMA> mongo mongod --port 27017 --bind_ip_all --shardsvr --replSet "<NOMBRE_REPLICA_DIAGRAMA>"
 
 // Initiate de los serv. Shards
 rs.initiate(
