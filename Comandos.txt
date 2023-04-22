@@ -113,3 +113,51 @@ rs.addArb("10.0.0.13:27017")
 
 // Arbitro Costa Rica
 rs.addArb("10.0.0.14:27017")
+
+------------------------------------------------------------------------------------------------------------------------
+
+// +++ Stop Servers
+
+docker stop Router_David
+docker stop Router_Hector
+
+docker stop datos_CR_1
+docker stop datos_CR_2
+docker stop datos_Guatemala_1
+docker stop datos_Guatemala_2 
+docker stop datos_USA_1
+docker stop datos_USA_2
+docker stop datos_Mexico_1
+docker stop datos_Mexico_2
+
+docker stop Arbitro_CR 
+docker stop Arbitro_Guatemala
+docker stop Arbitro_USA
+docker stop Arbitro_Mexico
+
+docker stop dispConf1
+docker stop dispConf2
+
+------------------------------------------------------------------------------------------------------------------------
+
+// +++ Start Servers
+
+docker start dispConf1
+docker start dispConf2
+
+docker start datos_CR_1
+docker start datos_CR_2
+docker start datos_Guatemala_1
+docker start datos_Guatemala_2
+docker start datos_USA_1
+docker start datos_USA_2
+docker start datos_Mexico_1
+docker start datos_Mexico_2
+
+docker start Arbitro_CR
+docker start Arbitro_Guatemala
+docker start Arbitro_USA
+docker start Arbitro_Mexico
+
+docker start Router_David
+docker start Router_Hector
