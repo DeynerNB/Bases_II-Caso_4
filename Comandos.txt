@@ -39,7 +39,7 @@ rs.initiate(
 ------------------------------------------------------------------------------------------------------------------------
 
 // Servidores Router (Hacer el 'addShard(...)' por cada replicaSet que exista)
-docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> -p <PUERTO_DIAGRAMA>:27017 --name <NOMBRE_DIAGRAMA> mongo mongos --port 27017 --bind_ip_all --configdb repconfdisp/<IP_VPN_CONF_1>:<PUERTO_CONF_1>,<IP_VPN_CONF_2>:<PUERTO_CONF_2>
+docker run -d --net Network_Caso4 --ip <IP_DIAGRAMA> -p <PUERTO_DIAGRAMA>:27017 --name <NOMBRE_DIAGRAMA> mongo mongos --port 27017 --bind_ip_all --configdb repSet_Configuracion/<IP_VPN_CONF_1>:<PUERTO_CONF_1>,<IP_VPN_CONF_2>:<PUERTO_CONF_2>
 
 // Agregamos los shard al router
 sh.addShard("<NOMBRE_REPLICA>/<IP_VPN_SHARD_1>:<PUERTO_SHARD_1>");
