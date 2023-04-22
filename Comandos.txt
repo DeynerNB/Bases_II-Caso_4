@@ -53,27 +53,34 @@ sh.addShard("<NOMBRE_REPLICA>/<IP_VPN_SHARD_1>:<PUERTO_SHARD_1>");
 // hagan esta parte de distribuir por configuracion los cursos que son de una sede u otra
 // para hacer distribucion manual de datos se puede hacer por shardkeys de rangos o con shard tags
 // desde el router
-sh.addShardTag("repNicaragua", "Nicaragua")
-sh.addShardTag("repPanama", "Panama")
-sh.addShardTag("repCostaRica", "Costa Rica")
+sh.addShardTag("repSet_CR", "Costa Rica")
+sh.addShardTag("repSet_USA", "Estados Unidos")
+sh.addShardTag("repSet_Mexico", "Mexico")
+sh.addShardTag("repSet_Guatemala", "Guatemala")
 
 // Asigna un rango en el sharded cluster
-sh.addTagRange( "disponibles.servicios",
-                { pais: "Nicaragua" },
-                { pais: "Nicaragua1" },
-                "Nicaragua"
-              )
-
-sh.addTagRange( "disponibles.servicios",
-                { pais: "Panama" },
-                { pais: "Panama1" },
-                "Panama"
-              )
-
 sh.addTagRange( "disponibles.servicios",
                 { pais: "Costa Rica" },
                 { pais: "Costa Rica1" },
                 "Costa Rica"
+              )
+
+sh.addTagRange( "disponibles.servicios",
+                { pais: "Estados Unidos" },
+                { pais: "Estados Unidos1" },
+                "Estados Unidos"
+              )
+
+sh.addTagRange( "disponibles.servicios",
+                { pais: "Mexico" },
+                { pais: "Mexico1" },
+                "Mexico"
+              )
+
+sh.addTagRange( "disponibles.servicios",
+                { pais: "Guatemala" },
+                { pais: "Guatemala1" },
+                "Guatemala"
               )
 
 // Indico cual va a ser la base de datos que va a soportar sharding
