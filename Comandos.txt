@@ -105,14 +105,7 @@ db.adminCommand({
 });
 
 // Me conecto a cada servidor de replica y le agrego su arbitro
-// Arbitro Nicaragua
-rs.addArb("10.0.0.12:27017")
-
-// Arbitro Panama
-rs.addArb("10.0.0.13:27017")
-
-// Arbitro Costa Rica
-rs.addArb("10.0.0.14:27017")
+rs.addArb("<IP_DIAGRAMA_ARBITRO>")
 
 ------------------------------------------------------------------------------------------------------------------------
 
