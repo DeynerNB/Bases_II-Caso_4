@@ -46,7 +46,6 @@ sh.addShard("<NOMBRE_REPLICA>/<IP_VPN_SHARD_1>:<PUERTO_SHARD_1>");
 
 ------------------------------------------------------------------------------------------------------------------------
 
-
 // Asociar un replica set de shards con un identificador(Poder identificar a donde pertenece la info)
 sh.addShardTag("repSet_CR", "Costa Rica")
 sh.addShardTag("repSet_USA", "Estados Unidos")
