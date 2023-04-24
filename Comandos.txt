@@ -46,19 +46,14 @@ sh.addShard("<NOMBRE_REPLICA>/<IP_VPN_SHARD_1>:<PUERTO_SHARD_1>");
 
 ------------------------------------------------------------------------------------------------------------------------
 
->  *************************  <
->  ** NO SE QUE HACE ESTO **  <
->  *************************  <
 
-// hagan esta parte de distribuir por configuracion los cursos que son de una sede u otra
-// para hacer distribucion manual de datos se puede hacer por shardkeys de rangos o con shard tags
-// desde el router
+// Asociar un replica set de shards con un identificador(Poder identificar a donde pertenece la info)
 sh.addShardTag("repSet_CR", "Costa Rica")
 sh.addShardTag("repSet_USA", "Estados Unidos")
 sh.addShardTag("repSet_Mexico", "Mexico")
 sh.addShardTag("repSet_Guatemala", "Guatemala")
 
-// Asigna un rango en el sharded cluster
+// Asigna un rango de etiquetas a los shards(Rango asignado para incluir los datos en disponibles.servicios)
 sh.addTagRange( "disponibles.servicios",
                 { pais: "Costa Rica" },
                 { pais: "Costa Rica1" },
