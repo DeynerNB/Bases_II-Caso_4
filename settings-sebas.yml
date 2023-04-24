@@ -1,0 +1,49 @@
+version: '3.9'
+
+networks:
+  Network_Caso4:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
+
+services:
+
+  dispConf2:
+    image: mongo
+    container_name: dispConf2
+    command: mongod --port 27017 --configsvr --bind_ip_all --replSet "repSet_Configuracion" --dbpath /data/configdb
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.20
+    ports:
+      - "27033:27017"
+
+  datos_USA_2:
+    image: mongo
+    container_name: datos_USA_2
+    command: mongod --port 27017 --bind_ip_all --shardsvr --replSet "repSet_USA"
+    networks:
+      - Network_Caso4
+    ports:
+      - "27031:27017"
+
+  datos_Mexico_1:
+    image: mongo
+    container_name: datos_Mexico_1
+    command: mongod --port 27017 --bind_ip_all --shardsvr --replSet "repSet_Mexico"
+    networks:
+      - Network_Caso4
+    ports:
+      - "27030:27017"
+
+  Arbitro_Mexico:
+    image: mongo
+    container_name: Arbitro_Mexico
+    command: mongod --port 27017 --replSet "repSet_Mexico"
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.19
+    ports:
+      - "27032:27017"
