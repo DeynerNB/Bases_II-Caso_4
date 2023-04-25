@@ -1,0 +1,50 @@
+version: '3.8'
+
+networks:
+  Network_Caso4:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
+
+services:
+  datos_USA_1:
+    image: mongo
+    container_name: datos_USA_1
+    command: mongod --port 27017 --bind_ip_all --shardsvr --replSet "repSet_USA"
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.13
+    ports:
+      - "27026:27017"
+
+  datos_Guatemala_2:
+    image: mongo
+    container_name: datos_Guatemala_2
+    command: mongod --port 27017 --bind_ip_all --shardsvr --replSet "repSet_Guatemala"
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.14
+    ports:
+      - "27027:27017"
+
+  RouterHector:
+    image: mongo
+    command: mongos --port 27017 --bind_ip_all --configdb repSet_Configuracion/192.168.192.57:27025,192.168.192.154:27033
+    container_name: RouterHector
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.16
+    ports:
+      - "27029:27017"
+
+  Arbitro_USA:
+    image: mongo
+    container_name: Arbitro_USA
+    command: mongod --port 27017 --replSet "repSet_USA"
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.15
+    ports:
+      - "27028:27017"

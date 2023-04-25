@@ -1,0 +1,50 @@
+
+version: "3.9"
+services:
+  datos_CR_1:
+    image: mongo
+    command: mongod --port 27017 --bind_ip_all --shardsvr --replSet "repSet_CR"
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.5
+    ports:
+      - "27018:27017"
+    container_name: datos_CR_1
+
+  datos_Mexico_2:
+    image: mongo
+    command: mongod --port 27017 --bind_ip_all --shardsvr --replSet "repSet_Mexico"
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.6
+    ports:
+      - "27019:27017"
+    container_name: datos_Mexico_2
+
+  Router_David:
+    image: mongo
+    command: mongos --port 27017 --bind_ip_all --configdb repSet_Configuracion/192.168.192.57:27025,192.168.192.154:27033
+    container_name: Router_David
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.8
+    ports:
+      - "27021:27017"
+      
+  Arbitro_CR:
+    image: mongo
+    command: mongod --port 27017 --replSet "repSet_CR"
+    container_name: Arbitro_CR
+    networks:
+      Network_Caso4:
+        ipv4_address: 10.0.0.7
+    ports:
+      - "27020:27017"
+      
+networks:
+  Network_Caso4:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
