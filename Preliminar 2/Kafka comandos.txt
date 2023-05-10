@@ -8,6 +8,9 @@ docker run -it --rm --name kafka --network KafkaNetwork --ip 10.0.1.9 -p 9092:90
 // Crear el API de NodeJS
 docker run --rm -it --net KafkaNetwork --name API_NodeJS --ip 10.0.1.5 -p 3000:3000 -v "C:\Users\deyne\OneDrive\Escritorio\Caso4\Preliminar 2\Node":"/nodeapi/" node bash
 
+// Crear el Consumer de GO
+docker run -v "$(pwd):/go/src/app" -w /go/src/app --network=kafka-net --name=GoConsumer --ip=10.0.1.4 golang go run main.go
+
 docker exec -it kafka bash
 
 kafka-console-producer.sh --bootstrap-server kafka:9092 --topic bases2_marvel
