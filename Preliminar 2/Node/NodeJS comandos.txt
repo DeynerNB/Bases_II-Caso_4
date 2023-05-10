@@ -1,0 +1,80 @@
+
+// Crear el contenedor de NodeJS
+docker run -it --name Node_API -p 3000:3000 --network caso4_Network_Caso4 node bash
+
+// --------------------------------------------------------------------
+// Instalar nano para poder editar los archivos del contenedor(Solo se hace 1 vez)
+// > apt-get update
+// > apt-get install nano -y
+// --------------------------------------------------------------------
+
+// Crear una carpeta para guardar los archivos y modulos de NodeJS e inicialiar npm
+mkdir <NOMBRE_CARPETA>
+cd <NOMBRE_CARPETA>
+npm init -y
+npm install express kafka-node
+
+// Hacer el archivo index.js (El productor) y copiar el código
+nano index.js
+
+===========================================================================
+const express = require('express');
+const kafka = require('kafka-node');
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(express.json())
+app.use(express.text())
+
+// Kafka declarations
+// const client = new kafka.KafkaClient({ kafkaHost: '10.0.0.101:9092' });
+// const producer = new kafka.Producer(client);
+
+
+//producer.on('ready', () => {
+//  console.log('Kafka producer is ready');
+//});
+//producer.on('error', (err) => {
+//  console.error('Error with Kafka producer:', err);
+//});
+
+// API interface
+app.get('/', async (req, res) => {
+
+    const payloads = [
+        { topic: 'testtopic', messages: "Prueba topic" }
+    ];
+
+    res.send("Hola");
+
+//    producer.send(payloads, (err, data) => {
+//        if (err) {
+//            console.error('Failed to produce message:', err);
+//            res.status(500).send('Failed to produce message!');
+//        } else {
+//            console.log('Message sent:', data);
+//            res.send('Message sent');
+//        }
+//  });
+});
+
+
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+===========================================================================
+
+// Para iniciar el API
+node index.js
+
+
+
+******************************************************************************
+******************************************************************************
+******************************************************************************
+
+// Para iniciar el bash en el contenedor ya creado
+docker start -i Node_API
+
