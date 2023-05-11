@@ -14,7 +14,7 @@ func main() {
 	config.Consumer.Return.Errors = true
 
 	// Especificar el grupo de consumidores y el topic al que se suscribirá el consumidor.
-	consumer, err := sarama.NewConsumer([]string{"10.0.1.3:9092"}, config)
+	consumer, err := sarama.NewConsumer([]string{"10.0.1.9:9092"}, config)
 	if err != nil {
 		log.Fatalln("Error al crear el consumidor de Kafka:", err)
 	}
@@ -25,7 +25,7 @@ func main() {
 	}()
 
 	// Suscribirse al topic de Kafka.
-	topic := "bases2_marvel"
+	topic := "test-topic"
 	partitionConsumer, err := consumer.ConsumePartition(topic, 0, sarama.OffsetNewest)
 	if err != nil {
 		log.Fatalln("Error al suscribirse al topic de Kafka:", err)
