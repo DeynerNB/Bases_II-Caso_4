@@ -13,9 +13,6 @@ docker run -v "C:\Users\David\Desktop\TEC\2023\SI\Bases Datos 2\Casos\Caso 4\Bas
 
 docker exec -it kafka bash
 
-kafka-console-producer.sh --bootstrap-server kafka:9092 --topic bases2_marvel
-kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic bases2_marvel --from-beginning
-
-bitacora de servicios yo
+docker run -it --rm --network bases_ii-caso_4_Network_Caso4 --ip 10.0.0.34 -v "C:\Users\David\Desktop\TEC\2023\SI\Bases Datos 2\Casos\Caso 4\Bases_II-Caso_4\Preliminar 2\" logstash:7.12.1
 
 C:\Users\David\Desktop\TEC\2023\SI\Bases Datos 2\Casos\Caso 4\Bases_II-Caso_4\Preliminar 2\Node
