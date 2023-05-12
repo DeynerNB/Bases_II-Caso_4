@@ -52,36 +52,17 @@ sh.addShardTag("repSet_USA", "Estados Unidos")
 sh.addShardTag("repSet_Mexico", "Mexico")
 sh.addShardTag("repSet_Guatemala", "Guatemala")
 
-// Asigna un rango de etiquetas a los shards(Rango asignado para incluir los datos en disponibles.servicios)
-sh.addTagRange( "disponibles.servicios",
-                { pais: "Costa Rica" },
-                { pais: "Costa Rica1" },
-                "Costa Rica"
-              )
-
-sh.addTagRange( "disponibles.servicios",
-                { pais: "Estados Unidos" },
-                { pais: "Estados Unidos1" },
-                "Estados Unidos"
-              )
-
-sh.addTagRange( "disponibles.servicios",
-                { pais: "Mexico" },
-                { pais: "Mexico1" },
-                "Mexico"
-              )
-
-sh.addTagRange( "disponibles.servicios",
-                { pais: "Guatemala" },
-                { pais: "Guatemala1" },
-                "Guatemala"
-              )
-
 // Indico cual va a ser la base de datos que va a soportar sharding
-sh.enableSharding("disponibles");
+sh.enableSharding("AlBulbDB");
+
+// Asigna un rango de etiquetas a los shards(Rango asignado para incluir los datos en AlBulbDB.servicios)
+sh.addTagRange( "AlBulbDB.paquetesMensuales", { country: "Costa Rica" }, { country: "Costa Rica1" }, "Costa Rica")
+sh.addTagRange( "AlBulbDB.paquetesMensuales", { country: "USA" }, { country: "USA1" }, "Estados Unidos")
+sh.addTagRange( "AlBulbDB.paquetesMensuales", { country: "Mexico" }, { country: "Mexico1" }, "Mexico")
+sh.addTagRange( "AlBulbDB.paquetesMensuales", { country: "Guatemala" }, { country: "Guatemala1" }, "Guatemala")
 
 // luego el collection y el campo del collection que va servir como shardkey
-sh.shardCollection("disponibles.servicios", { pais : 1 } );
+sh.shardCollection("AlBulbDB.requests", { country : 1 } );
 
 ------------------------------------------------------------------------------------------------------------------------
 
