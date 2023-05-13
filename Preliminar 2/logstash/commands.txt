@@ -1,5 +1,5 @@
 // Iniciar logstash con el plugin de logstash-input-mongodb
-docker run --rm -it --net caso4_Network_Caso4 --ip 10.0.0.50 -v "C:\Users\deyne\OneDrive\Escritorio\PruebaLogstash\logstash\pipeline:/usr/share/logstash/pipeline/" -v "C:\Users\deyne\OneDrive\Escritorio\PruebaLogstash\logstash\logstashconfig:/usr/share/logstash/config/" -v "C:\Users\deyne\OneDrive\Escritorio\PruebaLogstash\logstash\data:/home/data" logstash-mongo:latest
+docker run --rm -it --net caso4_Network_Caso4 --ip 10.0.0.50 -v "C:\Users\deyne\OneDrive\Escritorio\Caso4\Preliminar 2\logstash\pipeline:/usr/share/logstash/pipeline/" -v "C:\Users\deyne\OneDrive\Escritorio\Caso4\Preliminar 2\logstash\logstashconfig:/usr/share/logstash/config/" logstash-mongo:latest
 
 
 https://www.elastic.co/guide/en/logstash/7.17/ls-security.html
