@@ -47,6 +47,7 @@ func main() {
 		"group.id":          "myGroup",
 		"auto.offset.reset": "earliest",
 	})
+
 	if err != nil {
 		log.Fatalf("Failed to create consumer: %s\n", err)
 	}
