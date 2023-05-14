@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -43,7 +43,7 @@ type Service struct {
 func main() {
 	// Configurar el consumidor de Kafka
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "localhost:9092",
+		"bootstrap.servers": "10.0.0.51:9092",
 		"group.id":          "myGroup",
 		"auto.offset.reset": "earliest",
 	})
@@ -54,14 +54,16 @@ func main() {
 
 	defer consumer.Close()
 
+	fmt.Print("Consumer iniciado...\n")
+
 	// Suscribirse al topic
-	err = consumer.Subscribe("myTopic", nil)
+	err = consumer.SubscribeTopics([]string{"nuevo_Servicio", "actualizar_Servicio"}, nil)
 	if err != nil {
 		log.Fatalf("Failed to subscribe to topic: %s\n", err)
 	}
 
 	// Conectar a MongoDB
-	mongoURI := "mongodb://localhost:27017"
+	mongoURI := "mongodb://192.168.192.57:27040"
 	client, err := mongo.Connect(nil, options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %s\n", err)
@@ -69,7 +71,7 @@ func main() {
 
 	defer client.Disconnect(nil)
 
-	collection := client.Database("myDatabase").Collection("myCollection")
+	collection := client.Database("PruebaDB").Collection("services")
 
 	for {
 		// Leer mensajes de Kafka
@@ -102,8 +104,11 @@ func main() {
 		if err != nil {
 			log.Printf("Failed to insert data into MongoDB: %s\n", err)
 			continue
+			break
 		}
 
 		fmt.Printf("Inserted document with ID: %v\n", res.InsertedID)
 	}
+	consumer.Close()
+	fmt.Printf("\nConsumer cerrado!\n")
 }

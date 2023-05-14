@@ -9,7 +9,7 @@ docker run -it --rm --name kafka --network caso4_Network_Caso4 --ip 10.0.0.51 -p
 docker run --rm -it --net caso4_Network_Caso4 --name API_NodeJS --ip 10.0.0.52 -p 3000:3000 -v "C:\Users\deyne\OneDrive\Escritorio\Caso4\Preliminar 2\Node:/nodeapi/" -w "/nodeapi/" node bash
 
 // Crear el Consumer de GO
-docker run -v "C:\Users\deyne\OneDrive\Escritorio\Caso4\Preliminar 2\GOConsumer:/go/src/app" -w /go/src/app --network=caso4_Network_Caso4 --name=GoConsumer --ip=10.0.0.53 golang go run main.go
+docker run --rm -v "C:\Users\deyne\OneDrive\Escritorio\Caso4\Preliminar 2\GOConsumer:/go/src/app" -w /go/src/app --network=caso4_Network_Caso4 --name=GoConsumer --ip=10.0.0.53 golang go run main.go
 
 docker exec -it kafka bash
 

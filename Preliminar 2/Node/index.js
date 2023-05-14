@@ -18,14 +18,37 @@ producer.on('error', (err) => {
     console.error('Error with Kafka producer:', err);
 });
 
+const topics = [
+        {
+            topic: 'nuevo_Servicio',
+            partitions: 1,
+            replicationFactor: 1
+        },
+        {
+            topic: 'actualizar_Servicio',
+            partitions: 1,
+            replicationFactor: 1
+        }
+    ];
+
 // API main interface
 app.get('/', (req, res) => {
-    res.send("Select another option")
+
+    client.createTopics(topics, (error, result) => {
+        if (error) {
+            console.error("Topics no creados!")
+            res.send("Topics no creados!")
+        }
+        else {
+            console.log("Topics creados exitosamente!");
+            res.send("Topics creados exitosamente!")
+        }
+    });
 });
 
 // API add new service
 app.post('/agregarServicio', (req, res) => {
-    const message = req.body;
+    const message = JSON.stringify(req.body);
 
     const payloads = [
         { topic: 'nuevo_Servicio', messages: message }
@@ -44,7 +67,7 @@ app.post('/agregarServicio', (req, res) => {
 
 // API update specific service
 app.post('/actualizarServicio', (req, res) => {
-    const message = req.body;
+    const message = JSON.stringify(req.body);
 
     const payloads = [
         { topic: 'actualizar_Servicio', messages: message }
