@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -37,41 +38,64 @@ type Service struct {
 	BusinessModel []BusinessModel `json:"bussiness_model"`
 	AccessInfo    AccessInfo      `json:"access_info"`
 	Country       string          `json:"country"`
-	OperationType string          `json:"operation_type"`
 }
 
-func main() {
-	// Configurar el consumidor de Kafka
+func configurarKafkaConsumer() (*kafka.Consumer, error) {
+	//Se define la configuracion del consumer
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "10.0.0.51:9092",
+		"bootstrap.servers": "10.0.0.26:9092",
 		"group.id":          "myGroup",
 		"auto.offset.reset": "earliest",
 	})
+	return consumer, err
+}
 
+func conectarMongoDB() (*mongo.Client, error) {
+	//Se define la conexion al router con las bases de datos
+	mongoURI := "mongodb://192.168.192.14:27021"
+	client, err := mongo.Connect(nil, options.Client().ApplyURI(mongoURI))
+	return client, err
+}
+
+func dataInsertion(collection *mongo.Collection, company Service) (*mongo.InsertOneResult, error) {
+	res, err := collection.InsertOne(nil, bson.M{
+		"name":            company.Name,
+		"logo":            company.Logo,
+		"category":        company.Category,
+		"description":     company.Description,
+		"score":           company.Score,
+		"bussiness_model": company.BusinessModel,
+		"access_info":     company.AccessInfo,
+		"country":         company.Country,
+	})
+	return res, err
+}
+
+func main() {
+	topic_addService := "nuevo_Servicio"
+	topic_updateService := "actualizar_Servicio"
+
+	consumer, err := configurarKafkaConsumer()
 	if err != nil {
 		log.Fatalf("Failed to create consumer: %s\n", err)
 	}
-
 	defer consumer.Close()
 
-	fmt.Print("Consumer iniciado...\n")
-
-	// Suscribirse al topic
+	fmt.Println("Consumer Iniciado...")
 	err = consumer.SubscribeTopics([]string{"nuevo_Servicio", "actualizar_Servicio"}, nil)
 	if err != nil {
 		log.Fatalf("Failed to subscribe to topic: %s\n", err)
 	}
 
-	// Conectar a MongoDB
-	mongoURI := "mongodb://192.168.192.57:27040"
-	client, err := mongo.Connect(nil, options.Client().ApplyURI(mongoURI))
+	client, err := conectarMongoDB()
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %s\n", err)
 	}
-
 	defer client.Disconnect(nil)
 
-	collection := client.Database("PruebaDB").Collection("services")
+	fmt.Println("Conexion exitosa...")
+
+	collection := client.Database("AlBulbDB").Collection("services")
 
 	for {
 		// Leer mensajes de Kafka
@@ -81,34 +105,57 @@ func main() {
 			continue
 		}
 
-		// Decodificar el mensaje JSON
-		var company Service
-		err = json.Unmarshal(msg.Value, &company)
-		if err != nil {
-			log.Printf("Failed to decode JSON: %s\n", err)
-			continue
-		}
+		if *msg.TopicPartition.Topic == topic_addService {
+			// Decodificar el mensaje JSON
+			var company Service
+			err = json.Unmarshal(msg.Value, &company)
+			if err != nil {
+				log.Printf("Failed to decode JSON: %s\n", err)
+				continue
+			}
 
-		// Insertar datos en MongoDB
-		res, err := collection.InsertOne(nil, bson.M{
-			"name":            company.Name,
-			"logo":            company.Logo,
-			"category":        company.Category,
-			"description":     company.Description,
-			"score":           company.Score,
-			"bussiness_model": company.BusinessModel,
-			"access_info":     company.AccessInfo,
-			"country":         company.Country,
-			"operation_type":  company.OperationType,
-		})
-		if err != nil {
-			log.Printf("Failed to insert data into MongoDB: %s\n", err)
-			continue
-			break
-		}
+			// Insertar datos en MongoDB
+			res, err := dataInsertion(collection, company)
+			if err != nil {
+				log.Printf("Failed to insert data into MongoDB: %s\n", err)
+				continue
+				break
+			}
+			fmt.Printf("Inserted document with ID: %v\n", res.InsertedID)
 
-		fmt.Printf("Inserted document with ID: %v\n", res.InsertedID)
+		} else if *msg.TopicPartition.Topic == topic_updateService {
+			//Crear un mapa vacío para almacenar el JSON
+			data := make(map[string]interface{})
+			println("Se ha creado el map vacio...")
+
+			// Decodificar el JSON en el mapa
+			err := json.Unmarshal(msg.Value, &data)
+			if err != nil {
+				fmt.Println("Error al decodificar el JSON:", err)
+				return
+			}
+
+			//Filtramos la el request para saber donde hacer el update
+			filter := bson.D{{"name", data["service_name"].(string)}, {"country", data["country"].(string)}}
+
+			//update := bson.D{{"$set", bson.D{data["fields"].(map[string]interface{})}}}
+
+			fieldsMap := data["fields"].(map[string]interface{})
+
+			fieldsBson := bson.D{}
+
+			for key, value := range fieldsMap {
+				fieldsBson = append(fieldsBson, bson.E{Key: key, Value: value})
+			}
+			update := bson.D{{"$set", fieldsBson}}
+
+			res, err := collection.UpdateOne(context.TODO(), filter, update)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Printf("Updated document: %v\n", res)
+		}
 	}
-	consumer.Close()
-	fmt.Printf("\nConsumer cerrado!\n")
+	//consumer.Close()
+	//fmt.Printf("\nConsumer cerrado!\n")
 }
