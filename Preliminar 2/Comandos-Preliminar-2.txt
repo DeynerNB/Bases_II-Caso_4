@@ -1,18 +1,17 @@
 
 // Crear el Zookeeper
-docker run -it --rm --network caso4_Network_Caso4 -p 2181:2181 --ip 10.0.0.50 -e ALLOW_ANONYMOUS_LOGIN=yes bitnami/zookeeper:latest
+docker run -it --rm --net bases_ii-caso_4_Network_Caso4 -p 2181:2181 --ip 10.0.0.25 -e ALLOW_ANONYMOUS_LOGIN=yes bitnami/zookeeper:latest
 
 // Crear el Broker
 docker run -it --rm --name kafka --network caso4_Network_Caso4 --ip 10.0.0.51 -p 9092:9092 -p 9094:9094 -e ALLOW_PLAINTEXT_LISTENER=yes -e KAFKA_CFG_ZOOKEEPER_CONNECT=10.0.0.50:2181 -e KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true bitnami/kafka
+docker run -it --rm --name kafka --net bases_ii-caso_4_Network_Caso4 --ip 10.0.0.26 -p 9092:9092 -p 9094:9094 -e ALLOW_PLAINTEXT_LISTENER=yes -e KAFKA_CFG_ZOOKEEPER_CONNECT=10.0.0.25:2181 -e KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true bitnami/kafka
 
 // Crear el API de NodeJS
-docker run --rm -it --net caso4_Network_Caso4 --name API_NodeJS --ip 10.0.0.52 -p 3000:3000 -v "C:\Users\deyne\OneDrive\Escritorio\Caso4\Preliminar 2\Node:/nodeapi/" -w "/nodeapi/" node bash
+docker run --rm -it --net bases_ii-caso_4_Network_Caso4 --name API_NodeJS --ip 10.0.0.27 -p 3000:3000 -v "C:\Users\David\Desktop\TEC\2023\SI\Bases Datos 2\Casos\Caso 4\Bases_II-Caso_4\Preliminar 2\Node:/nodeapi/" node bash
 
 // Crear el Consumer de GO
-docker run --rm -v "C:\Users\deyne\OneDrive\Escritorio\Caso4\Preliminar 2\GOConsumer:/go/src/app" -w /go/src/app --network=caso4_Network_Caso4 --name=GoConsumer --ip=10.0.0.53 golang go run main.go
+docker run --rm --net=bases_ii-caso_4_Network_Caso4 --name=GoConsumer --ip=10.0.0.28 -v "C:\Users\David\Desktop\TEC\2023\SI\Bases Datos 2\Casos\Caso 4\Bases_II-Caso_4\Preliminar 2\GOConsumer:/go/src/app" -w /go/src/app golang go run main.go
 
 docker exec -it kafka bash
 
 docker run -it --rm --network bases_ii-caso_4_Network_Caso4 --ip 10.0.0.34 -v "C:\Users\David\Desktop\TEC\2023\SI\Bases Datos 2\Casos\Caso 4\Bases_II-Caso_4\Preliminar 2\" logstash:7.12.1
-
-C:\Users\David\Desktop\TEC\2023\SI\Bases Datos 2\Casos\Caso 4\Bases_II-Caso_4\Preliminar 2\Node
