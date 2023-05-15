@@ -61,8 +61,32 @@ sh.addTagRange( "AlBulbDB.paquetesMensuales", { country: "USA" }, { country: "US
 sh.addTagRange( "AlBulbDB.paquetesMensuales", { country: "Mexico" }, { country: "Mexico1" }, "Mexico")
 sh.addTagRange( "AlBulbDB.paquetesMensuales", { country: "Guatemala" }, { country: "Guatemala1" }, "Guatemala")
 
+sh.addTagRange( "AlBulbDB.requests", { country: "Costa Rica" }, { country: "Costa Rica1" }, "Costa Rica")
+sh.addTagRange( "AlBulbDB.requests", { country: "USA" }, { country: "USA1" }, "Estados Unidos")
+sh.addTagRange( "AlBulbDB.requests", { country: "Mexico" }, { country: "Mexico1" }, "Mexico")
+sh.addTagRange( "AlBulbDB.requests", { country: "Guatemala" }, { country: "Guatemala1" }, "Guatemala")
+
+sh.addTagRange( "AlBulbDB.users", { country: "Costa Rica" }, { country: "Costa Rica1" }, "Costa Rica")
+sh.addTagRange( "AlBulbDB.users", { country: "USA" }, { country: "USA1" }, "Estados Unidos")
+sh.addTagRange( "AlBulbDB.users", { country: "Mexico" }, { country: "Mexico1" }, "Mexico")
+sh.addTagRange( "AlBulbDB.users", { country: "Guatemala" }, { country: "Guatemala1" }, "Guatemala")
+
+sh.addTagRange( "AlBulbDB.services", { country: "Costa Rica" }, { country: "Costa Rica1" }, "Costa Rica")
+sh.addTagRange( "AlBulbDB.services", { country: "USA" }, { country: "USA1" }, "Estados Unidos")
+sh.addTagRange( "AlBulbDB.services", { country: "Mexico" }, { country: "Mexico1" }, "Mexico")
+sh.addTagRange( "AlBulbDB.services", { country: "Guatemala" }, { country: "Guatemala1" }, "Guatemala")
+
+sh.addTagRange( "AlBulbDB.logs", { country: "Costa Rica" }, { country: "Costa Rica1" }, "Costa Rica")
+sh.addTagRange( "AlBulbDB.logs", { country: "USA" }, { country: "USA1" }, "Estados Unidos")
+sh.addTagRange( "AlBulbDB.logs", { country: "Mexico" }, { country: "Mexico1" }, "Mexico")
+sh.addTagRange( "AlBulbDB.logs", { country: "Guatemala" }, { country: "Guatemala1" }, "Guatemala")
+
 // luego el collection y el campo del collection que va servir como shardkey
+sh.shardCollection("AlBulbDB.paquetesMensuales", { country : 1 } );
 sh.shardCollection("AlBulbDB.requests", { country : 1 } );
+sh.shardCollection("AlBulbDB.users", { country : 1 } );
+sh.shardCollection("AlBulbDB.services", { country : 1 } );
+sh.shardCollection("AlBulbDB.logs", { country : 1 } );
 
 ------------------------------------------------------------------------------------------------------------------------
 

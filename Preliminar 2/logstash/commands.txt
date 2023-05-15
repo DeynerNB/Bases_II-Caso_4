@@ -4,7 +4,5 @@ docker run --rm -it --net caso4_Network_Caso4 --ip 10.0.0.50 -v "C:\Users\deyne\
 
 https://www.elastic.co/guide/en/logstash/7.17/ls-security.html
 
-docker run -d --net disponet --ip 10.0.0.5 --name elastic -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -v "C:\dev\cursostec\bases II\logstash\elasticconfig:/usr/share/elasticsearch/config" elasticsearch:8.7.0
-
-
-docker run -d --name dashserver --net disponet -p 5601:5601 kibana:8.7.0
+docker run -d --net caso4_Network_Caso4 --ip 10.0.0.5 --name elastic -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -v "C:\Users\deyne\OneDrive\Escritorio\Caso4\Preliminar 2\logstash\elasticconfig:/usr/share/elasticsearch/config" elasticsearch:8.7.0
+docker run -d --name dashserver --net caso4_Network_Caso4 -p 5601:5601 kibana:8.7.0
