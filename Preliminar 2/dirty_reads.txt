@@ -5,19 +5,19 @@ DELIMITER $$
 CREATE PROCEDURE dirty_reads()
 BEGIN
 
-  -- Start a transaction
+  -- Iniciar una transacción
   START TRANSACTION;
 
-  -- Read the balance of the user's wallet
+  -- Leer el saldo de la billetera del usuario
   SELECT balance FROM Wallets WHERE user_id = 1;
 
-  -- Sleep for 1 second
+  -- Dormir durante 1 segundo
   SLEEP 1;
 
-  -- Update the balance of the user's wallet
+  -- Actualizar el saldo de la billetera del usuario
   UPDATE Wallets SET balance = balance - 100 WHERE user_id = 1;
 
-  -- Commit the transaction
+  -- Confirmar la transacción
   COMMIT;
 
 END $$
@@ -31,19 +31,18 @@ DELIMITER $$
 CREATE PROCEDURE phantoms()
 BEGIN
 
-  -- Start a transaction
   START TRANSACTION;
 
-  -- Read the list of requests
+  -- Leer la lista de solicitudes
   SELECT * FROM Requests;
 
-  -- Sleep for 1 second
+  -- Dormir durante 1 segundo
   SLEEP 1;
 
-  -- Add a new request
-  INSERT INTO Requests (user_id, provider_id, request_details, request_date, is_used) VALUES (1, 2, 'This is a new request', NOW(), FALSE);
+  -- Agregar una nueva solicitud
+  INSERT INTO Requests (user_id, provider_id, request_details, request_date, is_used) VALUES (1, 2, 'Esta es una nueva solicitud', NOW(), FALSE);
 
-  -- Commit the transaction
+  -- Confirmar la transacción
   COMMIT;
 
 END $$
@@ -51,74 +50,73 @@ END $$
 DELIMITER ;
 
 -- Lost updates
-
 DELIMITER $$
 
 CREATE PROCEDURE lost_updates()
 BEGIN
 
-  -- Start a transaction
+  -- Iniciar una transacción
   START TRANSACTION;
 
-  -- Read the balance of the user's wallet
+  -- Leer el saldo de la billetera del usuario
   SELECT balance FROM Wallets WHERE user_id = 1;
 
-  -- Sleep for 1 second
+  -- Dormir durante 1 segundo
   SLEEP 1;
 
-  -- Update the balance of the user's wallet
+  -- Actualizar el saldo de la billetera del usuario
   UPDATE Wallets SET balance = balance - 100 WHERE user_id = 1;
 
-  -- Start another transaction
+  -- Iniciar otra transacción
   START TRANSACTION;
 
-  -- Read the balance of the user's wallet again
+  -- Leer el saldo de la billetera del usuario nuevamente
   SELECT balance FROM Wallets WHERE user_id = 1;
 
-  -- Sleep for 1 second
+  -- Dormir durante 1 segundo
   SLEEP 1;
 
-  -- Update the balance of the user's wallet again
+  -- Actualizar el saldo de la billetera del usuario nuevamente
   UPDATE Wallets SET balance = balance - 100 WHERE user_id = 1;
 
-  -- Commit the second transaction
+  -- Confirmar la segunda transacción
   COMMIT;
 
-  -- Commit the first transaction
+  -- Confirmar la primera transacción
   COMMIT;
 
 END $$
 
 DELIMITER ;
 
--- Deadlocks
+-- Deadlocks (Interbloqueos)
 
 DELIMITER $$
 
 CREATE PROCEDURE deadlocks()
 BEGIN
 
-  -- Start two transactions
+  -- Iniciar dos transacciones
   START TRANSACTION;
   START TRANSACTION;
 
-  -- Acquire a lock on the Requests table
+  -- Adquirir un bloqueo en la tabla Requests
   SELECT * FROM Requests FOR UPDATE;
 
-  -- Sleep for 1 second
+  -- Dormir durante 1 segundo
   SLEEP 1;
 
-  -- Acquire a lock on the Wallets table
+  -- Adquirir un bloqueo en la tabla Wallets
   SELECT * FROM Wallets FOR UPDATE;
 
-  -- Sleep for 1 second
+  -- Dormir durante 1 segundo
   SLEEP 1;
 
-  -- Release the locks
+  -- Liberar los bloqueos
   RELEASE LOCK TABLE Requests;
   RELEASE LOCK TABLE Wallets;
 
-  -- Commit the transactions
+  -- Confirmar las transacciones
   COMMIT;
   COMMIT;
 
