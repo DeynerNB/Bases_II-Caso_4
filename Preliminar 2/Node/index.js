@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.text());
 
 // Kafka declarations
-const client = new kafka.KafkaClient({ kafkaHost: '10.0.0.51:9092' });
+const client = new kafka.KafkaClient({ kafkaHost: '10.0.0.26:9092' });
 const producer = new kafka.Producer(client);
 
 producer.on('ready', () => {
