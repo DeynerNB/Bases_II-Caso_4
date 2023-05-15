@@ -1,0 +1,127 @@
+-- Dirty reads
+
+DELIMITER $$
+
+CREATE PROCEDURE dirty_reads()
+BEGIN
+
+  -- Start a transaction
+  START TRANSACTION;
+
+  -- Read the balance of the user's wallet
+  SELECT balance FROM Wallets WHERE user_id = 1;
+
+  -- Sleep for 1 second
+  SLEEP 1;
+
+  -- Update the balance of the user's wallet
+  UPDATE Wallets SET balance = balance - 100 WHERE user_id = 1;
+
+  -- Commit the transaction
+  COMMIT;
+
+END $$
+
+DELIMITER ;
+
+-- Phantoms
+
+DELIMITER $$
+
+CREATE PROCEDURE phantoms()
+BEGIN
+
+  -- Start a transaction
+  START TRANSACTION;
+
+  -- Read the list of requests
+  SELECT * FROM Requests;
+
+  -- Sleep for 1 second
+  SLEEP 1;
+
+  -- Add a new request
+  INSERT INTO Requests (user_id, provider_id, request_details, request_date, is_used) VALUES (1, 2, 'This is a new request', NOW(), FALSE);
+
+  -- Commit the transaction
+  COMMIT;
+
+END $$
+
+DELIMITER ;
+
+-- Lost updates
+
+DELIMITER $$
+
+CREATE PROCEDURE lost_updates()
+BEGIN
+
+  -- Start a transaction
+  START TRANSACTION;
+
+  -- Read the balance of the user's wallet
+  SELECT balance FROM Wallets WHERE user_id = 1;
+
+  -- Sleep for 1 second
+  SLEEP 1;
+
+  -- Update the balance of the user's wallet
+  UPDATE Wallets SET balance = balance - 100 WHERE user_id = 1;
+
+  -- Start another transaction
+  START TRANSACTION;
+
+  -- Read the balance of the user's wallet again
+  SELECT balance FROM Wallets WHERE user_id = 1;
+
+  -- Sleep for 1 second
+  SLEEP 1;
+
+  -- Update the balance of the user's wallet again
+  UPDATE Wallets SET balance = balance - 100 WHERE user_id = 1;
+
+  -- Commit the second transaction
+  COMMIT;
+
+  -- Commit the first transaction
+  COMMIT;
+
+END $$
+
+DELIMITER ;
+
+-- Deadlocks
+
+DELIMITER $$
+
+CREATE PROCEDURE deadlocks()
+BEGIN
+
+  -- Start two transactions
+  START TRANSACTION;
+  START TRANSACTION;
+
+  -- Acquire a lock on the Requests table
+  SELECT * FROM Requests FOR UPDATE;
+
+  -- Sleep for 1 second
+  SLEEP 1;
+
+  -- Acquire a lock on the Wallets table
+  SELECT * FROM Wallets FOR UPDATE;
+
+  -- Sleep for 1 second
+  SLEEP 1;
+
+  -- Release the locks
+  RELEASE LOCK TABLE Requests;
+  RELEASE LOCK TABLE Wallets;
+
+  -- Commit the transactions
+  COMMIT;
+  COMMIT;
+
+END $$
+
+DELIMITER ;
